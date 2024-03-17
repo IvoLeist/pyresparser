@@ -7,8 +7,19 @@ from rank_candidate import sort_candidates
 from datetime import datetime
 import pandas as pd
 import sys
-import csv
 import os
+
+import requests
+from bs4 import BeautifulSoup
+
+def get_job_description(url, div_class):
+    """
+    Get the job description from the web
+    """
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    job_description = soup.find('div', class_= div_class).get_text()
+    return job_description
 
 result = []
 fields = ['Date', 'Skills', 'Name', 'Contact Number', 'Email ID', 'Current Company', 'Experience', 'College Name', 'Designation', 'Filename']
@@ -52,14 +63,17 @@ df = pd.DataFrame(result, columns=fields)
 df = df.applymap(lambda x: x.replace('\n', ' ') if isinstance(x, str) else x)
 
 try:
-    ranked_df = sort_candidates(sys.argv[2], df)
+    url = "https://www.cnag.eu/jobs/front-end-software-engineer-data-platforms-tools-dev-unit"
+    div_class = "main-content"
+    job_description = get_job_description(url, div_class)
+    ranked_df = sort_candidates(job_description, df)
 
     # Sort candidates in descending order of score
     ranked_df.sort_values(by="Score", ascending=False, inplace=True)
     ranked_df.to_csv(
         os.path.join(
             root, 
-            (datetime.today().strftime('Extracted-Resumes-%d-%m-%y.csv'))
+            (datetime.today().strftime('Extracted-Resumes-Ranked%d-%m-%y.csv'))
         ),
         index=False,
         sep=";",

@@ -24,7 +24,7 @@ docker-build:
 	docker build -t pyresparser .
 
 docker-run-json:
-	$(docker_cmd) pyresparser -d resumes/frontend/in > resumes/frontend/out/json/frontend_resumes_extracted2.json
+	$(docker_cmd) pyresparser -d resumes/frontend/in > resumes/frontend/out/json/frontend_resumes_extracted.json
 
 docker-run-csv:
 	$(docker_cmd) python3 export_to_csv.py resumes/frontend/in

@@ -15,16 +15,16 @@ test:
 	pyresparser -f OmkarResume.pdf
 
 run:
-	pyresparser -d resumes/frontend/in > resumes/frontend/out/json/frontend_resumes_extracted.json
+	pyresparser -d resumes/frontend/in -e json -o resumes/frontend/summary/frontend_resumes_extracted.json
 
-validate-output:
-	python3 -m json.tool resumes/frontend/out/json/frontend_resumes_extracted.json
+run-cv-by-cv:
+	bash scripts/extract_to_json_cv_by_cv.sh
 
 docker-build:
 	docker build -t pyresparser .
 
 docker-run-json:
-	$(docker_cmd) pyresparser -d resumes/frontend/in > resumes/frontend/out/json/frontend_resumes_extracted.json
+	$(docker_cmd) pyresparser -d resumes/frontend/in -e json -o resumes/frontend/summary/frontend_resumes_extracted.json
 
 docker-run-csv:
 	$(docker_cmd) python3 export_to_csv.py resumes/frontend/in

@@ -1,18 +1,21 @@
 #!/bin/bash
 # wraps pyresparser to extract cv by cv to json
 
-# Function to remove text with ANSI color codes
-remove_colored_text() {
-    sed 's/\x1b\[[0-9;]*m[^[:cntrl:]]*\x1b\[00m//g'
+copy_if_match() {
+    local pattern=$1
+    local dest_folder=$2
+    local message=$3
+
+    if grep -i -q -E "$pattern" "$output_dir/$filename.json"; then
+        echo "$message"
+        cp "$file" "$dest_folder"
+    fi
 }
 
 # Change the IFS (Internal Field Separator) to handle newline only
 IFS=$'\n'
 input_dir="resumes/frontend/in"
 output_dir="resumes/frontend/out/json"
-
-# reset jq_parse_errors.csv
-echo "filename;error" > $output_dir/invalid/jq_parse_errors.csv
 
 find $input_dir -type f | while read -r file; do
     echo "Processing \"$file\""
@@ -21,20 +24,12 @@ find $input_dir -type f | while read -r file; do
 
     echo "Processing \"$filename\""
     echo "Output \"$output_dir/$filename.json\""
-    res=$(pyresparser -f "$file")
-    cleaned_res=$(echo $res | remove_colored_text)
-    output_fn="$filename".json
+    # pyresparser -e json -f "$file" -o "$output_dir/$filename.json"
 
-    if error_message=$(echo "$cleaned_res" | jq . 2>&1 >/dev/null); then
-        echo "Valid JSON. Writing to file..."
-        echo $cleaned_res > $output_dir/valid/$output_fn
-    else
-        invalid_out_dir=$output_dir/invalid
-        echo "Invalid JSON. Storing error..."
-        echo "$output_fn;$error_message" >> $invalid_out_dir/jq_parse_errors.csv
-        echo $cleaned_res > $invalid_out_dir/$output_fn
-    fi
-    break
+    copy_if_match "bootcamp" "resumes/frontend/filtered/bootcamp_participants" "copy \"$file\" to bootcamp folder"
+    copy_if_match "(Master|M\.S\.)" "resumes/frontend/filtered/master_degree" "copy \"$file\" to master folder"
+    copy_if_match "Computer Science" "resumes/frontend/filtered/computer_science_degree" "copy \"$file\" to computer science folder"
+    copy_if_match "Senior" "resumes/frontend/filtered/senior" "copy \"$file\" to senior folder"
 done
 
 # Reset the IFS to its default value

@@ -2,11 +2,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "pyresparser",
+            "name": "pyresparser json",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/pyresparser/command_line.py",
             "args": ["-f", "OmkarResume.pdf"],
+        },
+        {
+            "name": "pyresparser csv",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/export_to_csv.py",
+            "args" : ["resumes/frontend/in"]
         }
     ]
 }

@@ -17,6 +17,9 @@ test:
 run:
 	pyresparser -d resumes/frontend/in -e json -o resumes/frontend/summary/frontend_resumes_extracted.json
 
+run-csv:
+	python3 export_to_csv.py resumes/frontend/in
+
 run-cv-by-cv:
 	bash scripts/extract_to_json_cv_by_cv.sh
 

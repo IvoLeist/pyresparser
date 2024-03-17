@@ -49,15 +49,36 @@ for root, directories, filenames in os.walk(sys.argv[1]):
 
 # writing to csv file
 df = pd.DataFrame(result, columns=fields)
+df = df.applymap(lambda x: x.replace('\n', ' ') if isinstance(x, str) else x)
 
 try:
     ranked_df = sort_candidates(sys.argv[2], df)
 
     # Sort candidates in descending order of score
     ranked_df.sort_values(by="Score", ascending=False, inplace=True)
-    ranked_df.to_csv(os.path.join(root, (datetime.today().strftime('Extracted-Resumes-%d-%m-%y.csv'))), index=False)
+    ranked_df.to_csv(
+        os.path.join(
+            root, 
+            (datetime.today().strftime('Extracted-Resumes-%d-%m-%y.csv'))
+        ),
+        index=False,
+        sep=";",
+        escapechar="\\"
+    )
 except IndexError:
-    df.to_csv(os.path.join(root, (datetime.today().strftime('Extracted-Resumes-%d-%m-%y.csv'))), index=False)
+    df.to_csv(
+        os.path.join(
+            root, 
+            (datetime.today().strftime('Extracted-Resumes-%d-%m-%y.csv'))
+        ), 
+        index=False,
+        sep=";",
+        escapechar="\\"
+    )
+
+# *df_to_csv still seems to be buggy
+# because the output file has one row more than expected
+# for a working export to csv see scripts/convert_json_to_csv.py
 
 # with open(os.path.join(root, (datetime.today().strftime('%d-%m-%y.csv'))), 'w', encoding="utf-8") as csvfile: 
 #     try:

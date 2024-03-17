@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "pyresparser",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pyresparser/command_line.py",
+            "args": ["-f", "OmkarResume.pdf"],
+        }
+    ]
+}
